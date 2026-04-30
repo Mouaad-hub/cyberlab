@@ -1,0 +1,7 @@
+IP Address	    Port	State	Service
+--------------------------------------------------
+10.180.32.122	135	    open	msrpc
+10.180.32.122	139	    open	netbios-ssn
+10.180.32.122	445	    open	microsoft-ds
+10.180.32.123	None	None	No open ports found
+10.180.32.127	None	None	No open ports found
