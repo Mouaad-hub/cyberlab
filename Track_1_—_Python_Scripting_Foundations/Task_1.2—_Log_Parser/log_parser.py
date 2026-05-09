@@ -9,9 +9,7 @@ from collections import Counter
 
 # Set up file paths and report generation timestamp
 
-auth = Path(
-    "auth.log"
-)  # normaly we use /ver/log/auth.log but for testing perpuses we will use auth.log
+auth = Path( "auth.log")  # normaly we use /ver/log/auth.log but for testing perpuses we will use auth.log
 timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 json_file = f"SSH_report{timestamp}.json"
 min_failed_attempts = 5
