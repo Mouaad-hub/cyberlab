@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Security Audit Report</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0c12;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      color: #e3e6f0;
+      padding: 2rem;
+    }
+
+    .wrapper {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      margin-bottom: 2.5rem;
+      border-bottom: 2px solid #2a2f3f;
+      padding-bottom: 1.5rem;
+    }
+
+    .header-label {
+      font-family: 'Courier New', 'SF Mono', Monaco, 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+      color: #6c7a9e;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      font-size: 3rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #6c7a9e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin: 0.5rem 0;
+    }
+
+    .audit-date {
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+      font-size: 0.85rem;
+      color: #8f9bb5;
+    }
+
+    /* Summary cards */
+    .summary {
+      display: flex;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .summary-item {
+      background: #11151f;
+      border-radius: 24px;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+      border: 1px solid #252b3a;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .summary-item:hover {
+      transform: translateY(-3px);
+      border-color: #3a445c;
+    }
+
+    .count {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+    }
+
+    .count.total { color: #b9c7ff; }
+    .count.high   { color: #ff5e6e; }
+    .count.medium { color: #ffb347; }
+    .count.low    { color: #5fcb7e; }
+
+    .label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8f9bb5;
+      margin-top: 0.5rem;
+    }
+
+    /* Finding card */
+    .finding {
+      background: #0e121c;
+      border-radius: 20px;
+      margin-bottom: 1.25rem;
+      border: 1px solid #1f2433;
+      overflow: hidden;
+      transition: box-shadow 0.2s;
+    }
+
+    .finding:hover {
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    }
+
+    .finding-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2rem 1.8rem;
+      cursor: pointer;
+      background: #0c101a;
+      transition: background 0.2s;
+    }
+
+    .finding-header:hover {
+      background: #111724;
+    }
+
+    .finding-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.2px;
+    }
+
+    .badge {
+      padding: 0.3rem 0.9rem;
+      border-radius: 100px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+    }
+
+    .badge.HIGH   { background: #ff5e6e20; color: #ff5e6e; border: 1px solid #ff5e6e40; }
+    .badge.MEDIUM { background: #ffb34720; color: #ffb347; border: 1px solid #ffb34740; }
+    .badge.LOW    { background: #5fcb7e20; color: #5fcb7e; border: 1px solid #5fcb7e40; }
+
+    .chevron {
+      font-size: 1.2rem;
+      transition: transform 0.25s;
+      color: #6c7a9e;
+    }
+
+    .finding-body {
+      padding: 1.5rem 1.8rem;
+      border-top: 1px solid #1a1f2c;
+      background: #0b0f17;
+    }
+
+    /* Collapsed state (added by JS) */
+    .finding.collapsed .finding-body {
+      display: none;
+    }
+    .finding.collapsed .chevron {
+      transform: rotate(-90deg);
+    }
+
+    /* Meta rows */
+    .meta-row {
+      margin-bottom: 1.5rem;
+    }
+    .meta-item {
+      margin-bottom: 0.8rem;
+    }
+    .meta-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6c7a9e;
+      margin-bottom: 0.25rem;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+    }
+    .meta-value {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .section-title {
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+      font-weight: bold;
+      margin: 1.2rem 0 0.8rem 0;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: #a5b3d1;
+      letter-spacing: 1px;
+    }
+
+    /* Table container */
+    .affected-table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    .affected-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+      background: #080b12;
+      min-width: 500px; 
+    }
+
+    .affected-table thead tr {
+      background: #10141f;
+    }
+
+    .affected-table th,
+    .affected-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #1e2435;
+      white-space: nowrap;
+    }
+
+    .affected-table th {
+      color: #b9c7ff;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .affected-table td {
+      color: #cbcfdf;
+      word-break: break-word;
+      white-space: normal; 
+    }
+
+    .rec-box {
+      margin-top: 2rem;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-left: 4px solid #5fcb7e;
+      padding: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .rec-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(95, 203, 126, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .rec-box strong {
+      color: #5fcb7e;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .rec-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .rec-list li {
+      color: #c9d1d9;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      padding: 0.6rem 0.8rem 0.6rem 1.8rem;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.2s ease;
+    }
+
+    .rec-list li:last-child {
+      border-bottom: none;
+    }
+
+    .rec-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #5fcb7e;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+
+    .rec-list li:hover {
+      background: rgba(95, 203, 126, 0.05);
+      color: #fff;
+    }
+
+    .no-findings {
+      font-style: italic;
+      color: #8b949e !important;
+    }
+
+    .no-findings::before {
+      content: "★" !important;
+    }
+
+    footer {
+      margin-top: 3rem;
+      text-align: center;
+      font-family: 'Courier New', 'SF Mono', Monaco, monospace;
+      font-size: 0.7rem;
+      color: #3a445c;
+      border-top: 1px solid #1f2433;
+      padding-top: 1.5rem;
+    }
+
+    @media (max-width: 700px) {
+      body { padding: 1rem; }
+      .finding-header { flex-wrap: wrap; gap: 0.6rem; }
+      .summary-item { padding: 1rem; }
+      .count { font-size: 2rem; }
+      .affected-table th, .affected-table td { padding: 0.5rem; }
+    }
+</style>
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <header>
+    <div class="header-label">Automated Security Audit</div>
+    <h1>Security Audit Report</h1>
+    <div class="audit-date">
+      Generated: <span>2026-05-12_12:40:28</span><br>
+      host name: <span>kali</span>
+    </div>
+  </header>
+
+  <!-- Summary counts (computed on the fly with Jinja2's loop) -->
+  
+  
+    
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+      
+        
+        
+        
+      
+  
+  
+    
+      
+        
+        
+        
+      
+  
+  
+
+  <div class="summary">
+    <div class="summary-item">
+      <div class="count total">7</div>
+      <div class="label">Total Findings</div>
+    </div>
+    <div class="summary-item">
+      <div class="count high">3</div>
+      <div class="label">High</div>
+    </div>
+    <div class="summary-item">
+      <div class="count medium">2</div>
+      <div class="label">Medium</div>
+    </div>
+    <div class="summary-item">
+      <div class="count low">2</div>
+      <div class="label">Low</div>
+    </div>
+  </div>
+
+  <!-- Findings -->
+  
+    
+
+    
+      
+        
+        <div class="finding HIGH collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">Open ports scan</span>
+            <span class="badge HIGH">HIGH</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Unexpected open ports</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected value</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>port</th>
+                      
+                        <th>service</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>22</td>
+                        
+                          <td>ssh</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+      
+        
+        <div class="finding HIGH collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">World-writable files</span>
+            <span class="badge HIGH">HIGH</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Files with 777 or o+w in sensitive dirs</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected path</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>Path</th>
+                      
+                        <th>Permissions</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>/etc/cron.daily/check</td>
+                        
+                          <td>-rwxrwxrwx</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+      
+        
+        <div class="finding HIGH collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">SUID/SGID binaries</span>
+            <span class="badge HIGH">HIGH</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Unexpected binaries with SUID bit</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected path</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>Path</th>
+                      
+                        <th>Permissions</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>/usr/local/bin/test</td>
+                        
+                          <td>-rwsr-xr-x</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+
+    
+      
+        
+        <div class="finding MEDIUM collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">Cron job review</span>
+            <span class="badge MEDIUM">MEDIUM</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Unusual or new cron entries</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected path</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>path</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>/etc/cron.daily/check</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+      
+        
+        <div class="finding MEDIUM collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">User account audit</span>
+            <span class="badge MEDIUM">MEDIUM</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Accounts with no password or UID 0</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected users</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>Violation</th>
+                      
+                        <th>User</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>User with empty password</td>
+                        
+                          <td>user3</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+      
+        
+        <div class="finding LOW collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">/tmp sensitive files </span>
+            <span class="badge LOW">LOW</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">Credentials or keys in /tmp</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected path</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>Path</th>
+                      
+                        <th>Type sensitive data</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>/tmp/.org.chromium.Chromium.ZqnNcC</td>
+                        
+                          <td>User credentials</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+    
+      
+        
+        <div class="finding LOW collapsed">
+          <div class="finding-header" onclick="toggleFinding(this)">
+            <span class="finding-title">Firewall status </span>
+            <span class="badge LOW">LOW</span>
+            <span class="chevron">▼</span>
+          </div>
+
+          <div class="finding-body">
+            <div class="meta-row">
+              <div class="meta-item">
+                <div class="meta-label">Description</div>
+                <div class="meta-value">UFW/iptables disabled</div>
+              </div>
+            </div>
+
+            <!-- Display all fields that start with "Affected" and are non-empty -->
+            
+              
+            
+              
+            
+              
+            
+              
+                <div class="section-title">Affected value</div>
+                <table class="affected-table">
+                  <thead>
+                    <tr>
+                      
+                        <th>Firewall service </th>
+                      
+                        <th>state</th>
+                      
+                    </tr>
+                  </thead>
+                  <tbody>
+                    
+                      <tr>
+                        
+                          <td>iptables</td>
+                        
+                          <td>inactive</td>
+                        
+                      </tr>
+                    
+                      <tr>
+                        
+                          <td>UFW</td>
+                        
+                          <td>inactive</td>
+                        
+                      </tr>
+                    
+                  </tbody>
+                </table>
+              
+            
+              
+            
+
+            <!-- Recommendation -->
+           
+          </div>
+        </div>
+       
+       
+
+
+
+<div class="rec-box">
+  <div class="rec-header">
+    <strong>Remediation Checklist</strong>
+  </div>
+  
+  <ul class="rec-list">
+    
+    
+      
+    
+      
+        
+          
+            <li>Don't leave open ports except as absolutely necessary</li>
+          
+        
+      
+    
+      
+        
+          
+            <li>Grant only the minimum permissions necessary, if you don't need it, you shouldn't have it.</li>
+          
+        
+      
+    
+      
+        
+          
+            <li>Remove SUID/SGID from any binary that does not explicitly require elevated execution privileges.</li>
+          
+        
+      
+    
+      
+        
+      
+    
+      
+        
+          
+            <li>Investigate unknown cron jobs, remove any that are not explicitly required, and ensure all cron files are owned by root.</li>
+          
+        
+      
+    
+      
+        
+          
+            <li>Remove or lock unused accounts, ensure no unauthorized UID 0 users exist, and enforce strong password hashing.</li>
+          
+        
+      
+    
+      
+        
+          
+            <li>Never store sensitive credentials, keys, or tokens in plain text files, use a secrets manager or environment variables instead.</li>
+          
+        
+      
+    
+      
+        
+          
+            <li>Enable and configure a firewall (UFW or iptables) to restrict unauthorized network access.</li>
+          
+        
+      
+    
+  </ul>
+</div>
+
+  <footer>END OF REPORT &nbsp;·&nbsp; 2026-05-12_12:40:28</footer>
+
+ </div>
+
+<script>
+  
+  function toggleFinding(headerElement) {
+    const findingDiv = headerElement.closest('.finding');
+    if (findingDiv) {
+      findingDiv.classList.toggle('collapsed');
+    }
+  }
+</script>
+</body>
+</html>
