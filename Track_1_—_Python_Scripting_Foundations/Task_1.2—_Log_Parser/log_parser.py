@@ -9,14 +9,15 @@ from collections import Counter
 
 # Set up file paths and report generation timestamp
 
-auth = Path( "auth.log")  # normaly we use /ver/log/auth.log but for testing perpuses we will use auth.log
+auth = Path("auth.log")  # normally we use /var/log/auth.log but for testing purposes we will use auth.log
 timestamp = datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 json_file = f"SSH_report{timestamp}.json"
 min_failed_attempts = 5
+
 # Attempt to parse the authentication log file
 try:
-    with open(auth,"r") as f:
-
+    with open(auth, "r") as f:
+        
         # Initialize variables to store SSH attempt data
         ssh_login_exist = False
         ip_list = []
@@ -35,6 +36,7 @@ try:
                 time_list.append(time_pattern.group())
                 date_list.append(date_pattern.group())
                 ssh_login_exist = True
+                
         # If failed logins were detected, generate and display the report
         if ssh_login_exist:
             print(f"[!] Suspicious Activity Report — {timestamp}")
@@ -42,6 +44,7 @@ try:
             unique_ips = set(ip_list)
             results = []
             ip_counts = Counter(ip_list)
+            
             # Process each unique IP to count occurrences and get the last seen time
             for unique_ip in unique_ips:
                 count = ip_counts[unique_ip]
@@ -58,6 +61,7 @@ try:
                     print(
                         f"IP: {unique_ip} | Total Failed Attempts: {count} | Last Seen: {last_time}"
                     )
+                    
             # Structure the final report and save it to a JSON file
             final_report = {
                 "report_generated": timestamp,
@@ -66,13 +70,14 @@ try:
             }
             with open(json_file, "w", encoding="utf-8") as f:
                 json.dump(final_report, f, indent=4)
+                
         # Notify if no failed connections were found in the log
         if not ssh_login_exist:
-            print(f"no failed connections found ")
+            print("No failed connections found.")
 
-    print(f"\n\nresults saved in {json_file}")
+    print(f"\n\nResults saved in {json_file}")
 # Catch exceptions related to missing files or incorrect permissions
 except PermissionError:
-    print(f"you cant read this file")
+    print("You don't have permission to read this file.")
 except FileNotFoundError:
-    print(f"Error: {auth} not found")
+    print(f"Error: '{auth}' not found.")

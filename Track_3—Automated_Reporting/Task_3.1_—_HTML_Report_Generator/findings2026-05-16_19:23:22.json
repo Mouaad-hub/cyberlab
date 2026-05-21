@@ -1,5 +1,5 @@
 {
-    "audit date": "2026-05-11_13:17:13",
+    "audit date": "2026-05-12_12:40:28",
     "Open ports scan": [
         {
             "Check": "Open ports scan",
@@ -9,14 +9,6 @@
                 {
                     "port": 22,
                     "service": "ssh"
-                },
-                {
-                    "port": 4444,
-                    "service": "krb524"
-                },
-                {
-                    "port": 53626,
-                    "service": "unknown"
                 }
             ],
             "Recommendation": "Don't leave open ports except as absolutely necessary"
@@ -28,10 +20,10 @@
             "Severity": "HIGH",
             "Description": "Files with 777 or o+w in sensitive dirs",
             "Affected path": [
-                {
-                    "Path": "/etc/cron.daily/check",
-                    "Permissions": "-rwxrwxrwx"
-                }
+              {
+                 "Path": "/etc/cron.daily/check",
+                 "Permissions": "-rwxrwxrwx"
+              }
             ],
             "Recommendation": "Grant only the minimum permissions necessary, if you don't need it, you shouldn't have it."
         }
@@ -43,10 +35,6 @@
             "Description": "Unexpected binaries with SUID bit",
             "Affected path": [
                 {
-                    "Path": "/usr/local/bin/shell",
-                    "Permissions": "-rwsr-xr-x"
-                },
-                {
                     "Path": "/usr/local/bin/test",
                     "Permissions": "-rwsr-xr-x"
                 }
@@ -54,21 +42,7 @@
             "Recommendation": "Remove SUID/SGID from any binary that does not explicitly require elevated execution privileges."
         }
     ],
-    "SSH config audit": [
-        {
-            "Check": "SSH config audit",
-            "Severity": "MEDIUM",
-            "Description": "Root login, empty passwords, protocol version",
-            "Affected path": {
-                "Path": "/etc/ssh/sshd_config",
-                "Weak configurations": [
-                    "Root login allowed",
-                    "Empty passwords are permitted"
-                ]
-            },
-            "Recommendation": "Harden SSH configuration by disabling root login, empty passwords, and legacy protocol versions."
-        }
-    ],
+    "SSH config audit": [],
     "Cron job review": [
         {
             "Check": "Cron job review",
@@ -103,8 +77,8 @@
             "Description": "Credentials or keys in /tmp",
             "Affected path": [
                 {
-                    "Path": "/tmp/creds.txt",
-                    "Type sensitive data": "OpenAI/DeepSeek key"
+                    "Path": "/tmp/.org.chromium.Chromium.ZqnNcC",
+                    "Type sensitive data": "User credentials"
                 }
             ],
             "Recommendation": "Never store sensitive credentials, keys, or tokens in plain text files, use a secrets manager or environment variables instead."
