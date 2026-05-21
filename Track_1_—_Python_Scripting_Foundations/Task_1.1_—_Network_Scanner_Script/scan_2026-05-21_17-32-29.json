@@ -1,0 +1,101 @@
+{
+    "timestamp": "2026-05-21_17-32-29",
+    "target": "192.168.100.0/24",
+    "hosts": [
+        {
+            "ip": "192.168.100.1",
+            "state": "up",
+            "ports": [
+                {
+                    "port": 53,
+                    "state": "open",
+                    "service": "domain"
+                },
+                {
+                    "port": 80,
+                    "state": "open",
+                    "service": "http"
+                }
+            ]
+        },
+        {
+            "ip": "192.168.100.10",
+            "state": "up",
+            "ports": []
+        },
+        {
+            "ip": "192.168.100.136",
+            "state": "up",
+            "ports": [
+                {
+                    "port": 22,
+                    "state": "open",
+                    "service": "ssh"
+                }
+            ]
+        },
+        {
+            "ip": "192.168.100.17",
+            "state": "up",
+            "ports": [
+                {
+                    "port": 80,
+                    "state": "open",
+                    "service": "http"
+                },
+                {
+                    "port": 322,
+                    "state": "open",
+                    "service": "rtsp"
+                },
+                {
+                    "port": 443,
+                    "state": "open",
+                    "service": "tcpwrapped"
+                },
+                {
+                    "port": 554,
+                    "state": "open",
+                    "service": "rtsp"
+                }
+            ]
+        },
+        {
+            "ip": "192.168.100.190",
+            "state": "up",
+            "ports": []
+        },
+        {
+            "ip": "192.168.100.241",
+            "state": "up",
+            "ports": [
+                {
+                    "port": 80,
+                    "state": "open",
+                    "service": "http"
+                },
+                {
+                    "port": 322,
+                    "state": "open",
+                    "service": "rtsp"
+                },
+                {
+                    "port": 443,
+                    "state": "open",
+                    "service": "tcpwrapped"
+                },
+                {
+                    "port": 554,
+                    "state": "open",
+                    "service": "rtsp"
+                }
+            ]
+        },
+        {
+            "ip": "192.168.100.242",
+            "state": "up",
+            "ports": []
+        }
+    ]  
+    
+}

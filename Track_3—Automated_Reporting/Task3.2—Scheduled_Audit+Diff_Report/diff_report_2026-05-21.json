@@ -1,0 +1,94 @@
+{
+    "New findings": [
+        [
+            {
+                "Check": "Open ports scan",
+                "Severity": "HIGH",
+                "Description": "Unexpected open ports",
+                "Affected value": [
+                    {
+                        "port": 60542,
+                        "service": "unknown"
+                    }
+                ],
+                "Recommendation": "Don't leave open ports except as absolutely necessary"
+            }
+        ],             
+        [
+            {
+                "Check": "/tmp sensitive files ",
+                "Severity": "LOW",
+                "Description": "Credentials or keys in /tmp",
+                "Affected path": [
+                    {
+                        "Path": "/tmp/.org.chromium.Chromium.ScPlVz",
+                        "Type sensitive data": "User credentials"
+                    }
+                ],
+                "Recommendation": "Never store sensitive credentials, keys, or tokens in plain text files, use a secrets manager or environment variables instead."
+            }
+        ],
+        [
+            {
+                "Check": "Firewall status ",
+                "Severity": "LOW",
+                "Description": "UFW/iptables disabled",
+                "Affected value": [
+                    {
+                        "Firewall service ": "UFW",
+                        "state": "inactive"
+                    }
+                ],
+                "Recommendation": "Enable and configure a firewall (UFW or iptables) to restrict unauthorized network access."
+            }
+        ]
+    ],
+    "Resolved findings": [
+        [
+            {
+                "Check": "Open ports scan",
+                "Severity": "HIGH",
+                "Description": "Unexpected open ports",
+                "Affected value": [
+                    {
+                        "port": 22,
+                        "service": "ssh"
+                    },
+                    {
+                        "port": 444,
+                        "service": "netcat"
+                    }
+                ],
+                "Recommendation": "Don't leave open ports except as absolutely necessary"
+            }
+        ],
+        [
+            {
+                "Check": "World-writable files",
+                "Severity": "HIGH",
+                "Description": "Files with 777 or o+w in sensitive dirs",
+                "Affected path": [
+                    {
+                        "Path": "/etc/cron.daily/check",
+                        "Permissions": "-rwxrwxrwx"
+                    }
+                ],
+                "Recommendation": "Grant only the minimum permissions necessary, if you don't need it, you shouldn't have it."
+            }
+        ],
+        [
+            {
+                "Check": "/tmp sensitive files ",
+                "Severity": "LOW",
+                "Description": "Credentials or keys in /tmp",
+                "Affected path": [
+                    {
+                        "Path": "/tmp/.org.chromium.Chromium.ZqnNcC",
+                        "Type sensitive data": "User credentials"
+                    }
+                ],
+                "Recommendation": "Never store sensitive credentials, keys, or tokens in plain text files, use a secrets manager or environment variables instead."
+            }
+        ]
+    ]
+}

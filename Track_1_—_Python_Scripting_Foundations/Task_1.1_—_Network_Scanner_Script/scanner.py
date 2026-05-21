@@ -74,7 +74,7 @@ def main():
     try:
         scanner.scan(
             hosts=target,
-            arguments="-T4 -Pn -p 1-1024"
+            arguments="-T4 -Pn -sV -p 1-1024"
         )
     except Exception as e:
         print(f"Scan error: {e}")

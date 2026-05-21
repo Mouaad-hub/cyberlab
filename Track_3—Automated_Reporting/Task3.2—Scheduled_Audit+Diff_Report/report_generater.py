@@ -8,10 +8,12 @@ from datetime import datetime
 # Setup argument parser to accept the findings JSON file
 parser = argparse.ArgumentParser()
 parser.add_argument("findings", help="Path to the JSON findings file")
+parser.add_argument("--diff_findings", "-d",     help= "Path to diff file", default=None)
 args = parser.parse_args()
 
 # Store the provided file path
 json_file = args.findings
+diff_json_file = args.diff_findings
 
 # Execute the 'uname -n' command to get the system's hostname
 run = subprocess.run(
@@ -22,11 +24,16 @@ run = subprocess.run(
 hostname = run.stdout.strip()
 
 # Open and parse the JSON findings file
+
 try:
+    if diff_json_file and diff_json_file.endswith('.json'):
+        with open(diff_json_file, "r") as f:
+            diff_data = json.load(f)
     # Check if the provided file has a .json extension
     if json_file.endswith('.json'):
         with open(json_file, "r") as f:
             data = json.load(f)
+        
     else:
         print("Please pass a JSON file as an argument")
         sys.exit(1)
@@ -38,12 +45,17 @@ try:
     template = env.get_template('template.html')
 
     # Render the template with the JSON data and hostname
-    output = template.render(data=data, hostname=hostname)
+    if diff_json_file:
+        output = template.render(data=data,  diff_data=diff_data, hostname=hostname)
+    else:
+        output = template.render(data=data,  hostname=hostname)
+         
+    
 
     # Generate the output HTML file name based on the audit date
     date = datetime.now().strftime("%Y-%m-%d")
     html_file = f"/var/reports/html_reports/report_{date}.html"
-
+    
     # Write the rendered HTML to the output file
     with open(html_file, 'w') as f:
         f.write(output)
