@@ -45,10 +45,15 @@ for key, value in new_data.items():
     if new_data[key] == prev_data[key]:
         continue
 
+    # Prevent IndexError if new_data[key] is empty (meaning no new findings for this check)
+    if not value:
+        continue
+
     for item in value[0]:  
         if item.startswith("Affected"):
             new_findings_value = [] 
-            prev_affected = prev_data[key][0][item]
+            # Safely get previous affected items. Default to empty list if prev_data[key] is []
+            prev_affected = prev_data[key][0][item] if prev_data.get(key) and len(prev_data[key]) > 0 else []
             
             for entry in value[0][item]: 
                 if entry not in prev_affected:
@@ -66,10 +71,15 @@ for key, value in prev_data.items():
     if prev_data[key] == new_data[key]:
         continue
 
+    # Prevent IndexError if prev_data[key] is empty (meaning no old findings to resolve)
+    if not value:
+        continue
+
     for item in value[0]:  
         if item.startswith("Affected"):
             resolved_findings_value = [] 
-            new_affected = new_data[key][0][item]
+            # Safely get new affected items. Default to empty list if new_data[key] is []
+            new_affected = new_data[key][0][item] if new_data.get(key) and len(new_data[key]) > 0 else []
             
             for entry in value[0][item]: 
                 if entry not in new_affected:
