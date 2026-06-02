@@ -1,10 +1,10 @@
 import jinja2
 import argparse
 import json
-import subprocess
+import socket
 import sys
 from datetime import datetime
-
+import os
 # Setup argument parser to accept the findings JSON file
 parser = argparse.ArgumentParser()
 parser.add_argument("findings", help="Path to the JSON findings file")
@@ -16,16 +16,17 @@ json_file = args.findings
 diff_json_file = args.diff_findings
 
 # Execute the 'uname -n' command to get the system's hostname
-run = subprocess.run(
-    ['uname', '-n'], 
-    capture_output=True, 
-    text=True
-)
-hostname = run.stdout.strip()
+
+hostname = socket.gethostname()
 
 # Open and parse the JSON findings file
 
 try:
+
+    if diff_json_file and not diff_json_file.endswith('.json'):
+        print("Diff file must be a JSON file")
+        sys.exit(1)
+    diff_data = None
     if diff_json_file and diff_json_file.endswith('.json'):
         with open(diff_json_file, "r") as f:
             diff_data = json.load(f)
@@ -39,16 +40,15 @@ try:
         sys.exit(1)
 
     # Setup Jinja2 environment to load templates from the current directory
-    env = jinja2.Environment(loader=jinja2.FileSystemLoader('.'))
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(script_dir))
 
     # Load the specific HTML template
     template = env.get_template('template.html')
 
     # Render the template with the JSON data and hostname
-    if diff_json_file:
-        output = template.render(data=data,  diff_data=diff_data, hostname=hostname)
-    else:
-        output = template.render(data=data,  hostname=hostname)
+
+    output = template.render(data=data, diff_data = diff_data,  hostname=hostname)
          
     
 
@@ -60,10 +60,7 @@ try:
     with open(html_file, 'w') as f:
         f.write(output)
 
-except FileNotFoundError:
-    # Handle the case where the JSON file is not found
-    print("File not found")
-    sys.exit(1)
-except PermissionError:
-    print("Permission denied, try running with sudo ")
+except Exception as e :
+    # Handle Errors
+    print(f"ERROR {e}")
     sys.exit(1)
