@@ -1,5 +1,6 @@
 {
     "email_from": "examplen.cender@gmail.com",
     "email_to": "example.resiever@gmail.com",
-    "email_password": "password 123"
+    "email_password": "password 123",
+    "discord_webhook": "https://discord.com/api/webhooks"
 }

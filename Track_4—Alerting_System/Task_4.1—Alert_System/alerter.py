@@ -2,6 +2,7 @@ import json
 from datetime import datetime
 import argparse
 import sys 
+import requests
 import smtplib
 from email.mime.text import MIMEText
 
@@ -12,7 +13,7 @@ parser.add_argument("config", help="Enter the path to the config file for smtpli
 args = parser.parse_args()
 
 # Initialize timestamps and variables
-date = datetime.now().strftime("%Y-%m-%d %H-%M-%S")
+date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 today = datetime.now().strftime("%Y-%m-%d")
 diff_file = args.diff_file 
 config_file = args.config
@@ -40,10 +41,10 @@ else:
     sys.exit(1)    
 
 # Function to format and send the email
-def send_email(high_findings, config_file):
-    body = "🚨The HIGH severity findings found are :\n\n"
+def send_email_and_discord_msg(high_findings, config_file):
+    body = "🚨New HIGH severity findings :\n\n"
     body += f"- date : {date}\n"
-    body += f"-New HIGH findings: {len(high_findings)}\n\n"
+    body += f"- New HIGH findings: {len(high_findings)}\n\n"
     
     for finding in high_findings:
         affected = ''
@@ -63,17 +64,27 @@ def send_email(high_findings, config_file):
     msg["From"] = config_file["email_from"]
     msg["To"] = config_file["email_to"]
 
-    # Connect to SMTP server and send email
+    
     try:
+        # Connect to SMTP server and send email
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
             smtp.login(config_file["email_from"], config_file["email_password"])
             smtp.send_message(msg)
             print("[✓] Email envoyé")
+        # send discord message 
+        alert = {
+            "content": body
+        }
+        web_hook = config_file["discord_webhook"]
+        requests.post(web_hook, json=alert)
+        print("[✓] Discord message envoyé")
     except Exception as e:
-        print(f"[!] Email non envoyé : {e}")
+        print(f"[!] Alert non envoyé : {e}")
+    
+    
 
 # Trigger the email alert if there are any high severity findings
 if high_findings_exists:
-    send_email(high_findings, config_file)
+    send_email_and_discord_msg(high_findings, config_file)
 else:
     print("[✓] Aucune nouvelle faille HIGH détectée.")
