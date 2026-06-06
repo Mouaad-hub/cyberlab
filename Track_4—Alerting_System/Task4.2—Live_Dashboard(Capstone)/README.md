@@ -19,9 +19,9 @@ dashboard/
 1. Copy or symlink your latest audit report into the dashboard directory:
 
    ```bash
-   cp /var/reports/findings_$(date).json dashboard/latest_report.json
+   cp /var/reports/findings/findings_$(date).json dashboard/latest_report.json
    # or as a symlink updated by the pipeline:
-   ln -sf /var/reports/findings_$(date).json dashboard/latest_report.json
+   ln -sf /var/reports/findings/findings_$(date).json dashboard/latest_report.json
    ```
 
 2. Serve the dashboard with Python's built-in HTTP server:
