@@ -32,7 +32,7 @@ Create the required output directories:
 sudo mkdir -p /var/reports/diff
 sudo mkdir -p /var/reports/html_reports
 sudo mkdir -p /var/findings
-sudo mkdir -p /var/log/auditlogs.log
+sudo touch -p /var/log/auditlogs.log
 ```
 
 

@@ -1,7 +1,6 @@
 import jinja2
 import argparse
 import json
-import socket
 import sys
 from datetime import datetime
 import os
@@ -15,9 +14,6 @@ args = parser.parse_args()
 json_file = args.findings
 diff_json_file = args.diff_findings
 
-# Execute the 'uname -n' command to get the system's hostname
-
-hostname = socket.gethostname()
 
 # Open and parse the JSON findings file
 
@@ -48,7 +44,7 @@ try:
 
     # Render the template with the JSON data and hostname
 
-    output = template.render(data=data, diff_data = diff_data,  hostname=hostname)
+    output = template.render(data=data, diff_data = diff_data,  hostname=data["host name"])
          
     
 
