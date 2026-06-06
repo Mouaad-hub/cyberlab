@@ -390,7 +390,7 @@
               {% if finding is mapping and "Severity" in finding %}
               <div class="finding {{ finding.Severity }} collapsed">
                 <div class="finding-header" onclick="toggleFinding(this)">
-                  <span class="finding-title">{{ finding.get("Check", category) }}</span>
+                  <span class="finding-title">{{ finding.get("Check") }}</span>
                   <span class="badge {{ finding.Severity }}">{{ finding.Severity }}</span>
                   <span class="chevron">▼</span>
                 </div>
@@ -419,7 +419,7 @@
                           {% for item in affected_items %}
                             <tr>
                               {% for col in affected_items[0].keys() %}
-                                <td>{{ item.get(col, "") }}</td>
+                                <td>{{ item.get(col) }}</td>
                               {% endfor %}
                             </tr>
                           {% endfor %}
@@ -446,7 +446,7 @@
         {% if finding is mapping and "Severity" in finding %}
         <div class="finding {{ finding.Severity }} collapsed">
           <div class="finding-header" onclick="toggleFinding(this)">
-            <span class="finding-title">{{ finding.get("Check", category) }}</span>
+            <span class="finding-title">{{ finding.get("Check") }}</span>
             <span class="badge {{ finding.Severity }}">{{ finding.Severity }}</span>
             <span class="chevron">▼</span>
           </div>
@@ -475,7 +475,7 @@
                     {% for item in affected_items %}
                       <tr>
                         {% for col in affected_items[0].keys() %}
-                          <td>{{ item.get(col, "") }}</td>
+                          <td>{{ item.get(col) }}</td>
                         {% endfor %}
                       </tr>
                     {% endfor %}
@@ -504,7 +504,7 @@
       {% if findings is iterable and findings is not string %}
         {% for finding in findings %}
           {% if finding is mapping and "Severity" in finding %}
-            <li>{{ finding.get("Recommendation", "No specific recommendation provided.") }}</li>
+            <li>{{ finding.get("Recommendation")}}</li>
           {% endif %}
         {% endfor %}
       {% endif %}
@@ -512,7 +512,7 @@
   </ul>
 </div>
 
-  <footer>END OF REPORT &nbsp;·&nbsp; {{ data.get("audit date", "Unknown date") }}</footer>
+  <footer>END OF REPORT &nbsp;·&nbsp; {{ data.get("audit date") }}</footer>
 
  </div>
 

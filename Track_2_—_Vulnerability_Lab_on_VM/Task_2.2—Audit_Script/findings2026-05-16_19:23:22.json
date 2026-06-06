@@ -1,5 +1,6 @@
 {
     "audit date": "2026-05-12_12:40:28",
+    "host name": "parrot",
     "Open ports scan": [
         {
             "Check": "Open ports scan",
