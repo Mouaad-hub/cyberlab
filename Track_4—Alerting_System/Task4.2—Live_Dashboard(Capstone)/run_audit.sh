@@ -14,7 +14,7 @@ if [ -f /home/mouaad/audit/audit.py ]; then
     if [ -f /home/mouaad/audit/diff_reports.py ] && [ -f /var/reports/findings/findings_$yesterday.json ]; then 
         sudo python3 /home/mouaad/audit/diff_reports.py /var/reports/findings/findings_$today.json /var/reports/findings/findings_$yesterday.json
         # run the alter script to notify for any new HIGH findings 
-        sudo python /home/mouaad/audit/alerter.py /var/reports/diff/diff_report_$today.json /home/mouaad/audit/config_file.json
+        sudo python3 /home/mouaad/audit/alerter.py /var/reports/diff/diff_report_$today.json /home/mouaad/audit/config_file.json
     fi
     
     # Check if the report generator script exists
