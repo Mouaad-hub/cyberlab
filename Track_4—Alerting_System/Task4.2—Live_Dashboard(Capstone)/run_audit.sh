@@ -29,5 +29,8 @@ if [ -f /path/to//audit.py ]; then
     else 
         echo "can't find report_generater.py"
         exit 1 
-    fi 
+    fi
+else 
+    echo "audit.py not found "
+    exit 1 
 fi
