@@ -68,14 +68,14 @@ cyberlab/
 │
 ├── Track_3—Automated_Reporting/
 │   ├── Task_3.1_—_HTML_Report_Generator/
-│   │   ├── report_generater.py               # HTML report generator
+│   │   ├── report_generator.py               # HTML report generator
 │   │   ├── template.html                     # Jinja2 HTML template
 │   │   ├── findings2026-05-16_19:23:22.json  # Sample input
 │   │   └── report_2026-05-12_12:40:28.html   # Sample report output
 │   └── Task3.2—Scheduled_Audit+Diff_Report/
 │       ├── run_audit.sh                      # Full pipeline orchestrator
 │       ├── diff_reports.py                   # Diff between audit runs
-│       ├── report_generater.py               # HTML report generator (with diff support)
+│       ├── report_generator.py               # HTML report generator (with diff support)
 │       ├── template.html                     # Jinja2 HTML template
 │       └── diff_report_2026-05-21.json       # Sample diff output
 │
