@@ -14,17 +14,17 @@ if [ -f /path/to/audit.py ]; then
     fi
     
     # Check if the report generator script exists
-    if [ -f /path/to/report_generater.py ]; then 
+    if [ -f /path/to/report_generator.py ]; then 
         # Run the report generator with or without the diff report based on its existence
         if [ -f /var/reports/diff/diff_report_$today.json ]; then 
-            sudo python3 /path/to/report_generater.py /var/reports/findings/findings_$today.json -d /var/reports/diff/diff_report_$today.json
+            sudo python3 /path/to/report_generator.py /var/reports/findings/findings_$today.json -d /var/reports/diff/diff_report_$today.json
             # run the alter script to notify for any new HIGH findings 
             sudo python /path/to/alerter.py /var/reports/diff/diff_report_$today.json /path/to/config_file.json
         else  
-            sudo python3 /path/to/report_generater.py /var/reports/findings/findings_$today.json
+            sudo python3 /path/to/report_generator.py /var/reports/findings/findings_$today.json
         fi
     else 
-        echo "can't find report_generater.py"
+        echo "can't find report_generator.py"
         exit 1 
     fi 
 fi 
